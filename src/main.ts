@@ -6,17 +6,17 @@ import { readFile } from 'jsonfile';
 
 import { runAll } from 'chromatic/bin/main';
 import parseArgs from 'chromatic/bin/lib/parseArgs';
-import {createLogger} from 'chromatic/bin/lib/log';
+import { createLogger } from 'chromatic/bin/lib/log';
 import getEnv from 'chromatic/bin/lib/getEnv';
 
 const maybe = (a: string, b: any = undefined) => {
-  if(!a) {
+  if (!a) {
     return b;
   }
 
   try {
     return JSON.parse(a);
-  } catch(e){
+  } catch (e) {
     return a;
   }
 }
@@ -26,7 +26,7 @@ const getCommit = (event: typeof context) => {
     case 'pull_request': {
       return {
         // @ts-ignore
-        owner: event.payload.repository.owner.login, 
+        owner: event.payload.repository.owner.login,
         // @ts-ignore
         repo: event.payload.repository.name,
         // @ts-ignore
@@ -40,7 +40,7 @@ const getCommit = (event: typeof context) => {
     case 'push': {
       return {
         // @ts-ignore
-        owner: event.payload.repository.owner.login, 
+        owner: event.payload.repository.owner.login,
         // @ts-ignore
         repo: event.payload.repository.name,
         branch: event.payload.ref.replace('refs/heads/', ''),
@@ -65,13 +65,13 @@ async function runChromatic(options): Promise<Output> {
   const sessionId = uuid();
   const env = getEnv();
   const log = createLogger(sessionId, env);
-  const packagePath = await pkgUp(); // the user's own package.json
+  const packagePath = await pkgUp(options.packageJsonPath); // the user's own package.json
   const packageJson = await readFile(packagePath);
 
-  const context = {...parseArgs([]), packagePath, packageJson, env, log, sessionId, flags: options} as any
-  
-  await runAll(context);  
-  const { build, exitCode } = context; 
+  const context = { ...parseArgs([]), packagePath, packageJson, env, log, sessionId, flags: options } as any
+
+  await runAll(context);
+  const { build, exitCode } = context;
 
   const { webUrl } = build || {};
 
@@ -83,8 +83,8 @@ async function runChromatic(options): Promise<Output> {
 
 async function run() {
   const commit = getCommit(context);
-  
-  if (!commit){
+
+  if (!commit) {
     return;
   }
 
@@ -93,6 +93,7 @@ async function run() {
   try {
     const projectToken = getInput('projectToken') || getInput('appCode'); // backwards compatibility
     const buildScriptName = getInput('buildScriptName');
+    const packageJsonPath = getInput('packageJsonPath');
     const scriptName = getInput('scriptName');
     const exec = getInput('exec');
     const skip = getInput('skip');
@@ -117,6 +118,7 @@ async function run() {
     const chromatic = runChromatic({
       projectToken,
       buildScriptName: maybe(buildScriptName),
+      packageJsonPath: maybe(packageJsonPath),
       scriptName: maybe(scriptName),
       exec: maybe(exec),
       skip: maybe(skip),
@@ -145,7 +147,7 @@ async function run() {
     setOutput('url', url);
     setOutput('code', code.toString());
 
-    if(code !== 0){
+    if (code !== 0) {
       setFailed('non-zero exit code');
     }
   } catch (e) {

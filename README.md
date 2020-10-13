@@ -41,6 +41,7 @@ it does NOT:
     token: ${{ secrets.GITHUB_TOKEN }}
     projectToken: 'Your chromatic project token'
     buildScriptName: 'The npm script that builds your Storybook [build-storybook]'
+    packageJsonPath: 'Provide a directory with your package.json folder path'
     storybookBuildDir: 'Provide a directory with your built storybook; use if you've already built your storybook'
     allowConsoleErrors: 'do not exit when runtime errors occur in storybook'
     autoAcceptChanges: 'automatically accept all changes in chromatic: boolean or branchname'

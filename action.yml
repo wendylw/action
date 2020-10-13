@@ -9,6 +9,8 @@ inputs:
     description: "Your chromatic project token"
   buildScriptName: 
     description: "The npm script that builds your Storybook [build-storybook]"
+  packageJsonPath:
+    description: "Provide a directory with your package.json folder path"
   doNotStart: 
     description: "Do not attempt to start or build; use if your Storybook is already running"
   exec: 
