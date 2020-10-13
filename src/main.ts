@@ -65,7 +65,7 @@ async function runChromatic(options): Promise<Output> {
   const sessionId = uuid();
   const env = getEnv();
   const log = createLogger(sessionId, env);
-  const packagePath = await pkgUp(options.packageJsonPath); // the user's own package.json
+  const packagePath = await pkgUp({ cwd: options.packageJsonPath }); // the user's own package.json
   const packageJson = await readFile(packagePath);
 
   const context = { ...parseArgs([]), packagePath, packageJson, env, log, sessionId, flags: options } as any
